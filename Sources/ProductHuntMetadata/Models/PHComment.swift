@@ -48,21 +48,6 @@ public struct PHComment: Sendable, Identifiable {
     /// The direct replies to this comment.
     public let replies: [PHComment]
 
-    // MARK: - Computed
-
-    /// Whether this comment has any replies.
-    public var hasReplies: Bool { !replies.isEmpty }
-
-    /// The total number of descendant comments beneath this one.
-    public var replyCount: Int {
-        replies.reduce(replies.count) { $0 + $1.replyCount }
-    }
-
-    /// This comment followed by all of its descendants, depth-first.
-    public var flattened: [PHComment] {
-        [self] + replies.flatMap(\.flattened)
-    }
-
     public init(
         id: String,
         text: String,
@@ -83,20 +68,5 @@ public struct PHComment: Sendable, Identifiable {
         self.parentId = parentId
         self.depth = depth
         self.replies = replies
-    }
-}
-
-// MARK: - Array helpers
-
-public extension Array where Element == PHComment {
-
-    /// All comments in the tree, depth-first (each comment followed by its replies).
-    var flattened: [PHComment] {
-        flatMap(\.flattened)
-    }
-
-    /// The total number of comments in the tree (top-level + all replies).
-    var totalCount: Int {
-        reduce(count) { $0 + $1.replyCount }
     }
 }
